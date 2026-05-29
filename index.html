@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Move Timeline — where he is, May 25 – July 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf9f6;
+    --panel: #ecebe4;
+    --lane: #fbfaf6;
+    --text: #33363d;
+    --muted: #71747b;
+    --hairline: #e4e2db;
+    --card: #ffffff;
+
+    --mom: #c357a0;            /* fun pink, leaning purple */
+    --mom-rib: #ebb4de;
+    --dad: #5d8a86;            /* grayish teal */
+    --dad-rib: #b6ccc9;
+    --kid: #8a3a5d;            /* the child while with Mom — deep plum */
+    --kid-dad: #336d66;        /* the child while with Dad — deep teal */
+
+    --sc: #7a9b76;
+    --pdx: #5f8c9c;            /* blue, leaning green */
+    --sd: #9a86c4;
+
+    --focus: #2b6cb0;
+    --ok: #2f7d4f;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { display: flex; justify-content: center; padding: 32px 28px 64px; overflow-x: hidden; }
+  #root { width: 100%; max-width: 1180px; }
+
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 5px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  .hdr { margin: 0 0 22px; }
+  .hdr h1 { font-size: 25px; line-height: 1.2; margin: 0 0 8px; font-weight: 700; letter-spacing: -0.01em; }
+  .hdr p { margin: 0; font-size: 16px; line-height: 1.55; color: var(--muted); max-width: 760px; }
+
+  /* diagram panel */
+  .panel { background: var(--panel); border-radius: 20px; padding: 18px 20px 14px; }
+  .readbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 0 0 2px; flex-wrap: wrap; }
+  .readout { min-height: 22px; font-size: 15px; color: var(--text); }
+  .diagram { width: 100%; display: block; }
+  .diagram text { font-family: "Atkinson Hyperlegible", sans-serif; }
+  .diagram .dayhit { cursor: pointer; }
+
+  /* controls */
+  .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0 0; }
+  @media (max-width: 760px) { .controls { grid-template-columns: 1fr; } }
+  .ctrl { background: var(--card); border: 1px solid var(--hairline); border-radius: 12px; padding: 14px 16px 16px; }
+  .ctrl .top { display: flex; align-items: center; gap: 9px; margin: 0 0 2px; }
+  .ctrl .sw { width: 22px; height: 12px; border-radius: 6px; flex: none; }
+  .ctrl .sw.line { height: 4px; border-radius: 2px; }
+  .ctrl .k { font-size: 14px; color: var(--muted); }
+  .ctrl .vrow { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; margin: 0 0 12px; }
+  .ctrl .v { font-size: 20px; font-weight: 700; }
+  .modetog { display: inline-flex; border: 1px solid var(--hairline); border-radius: 999px; overflow: hidden; background: var(--bg); flex: none; }
+  .modetog .mt { appearance: none; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--muted); padding: 5px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; line-height: 1; }
+  .modetog .mt:hover { color: var(--text); }
+  .modetog .mt.on { background: var(--text); color: #fff; }
+  .modetog .mt + .mt { border-left: 1px solid var(--hairline); }
+  .ctrl .row { display: flex; align-items: center; gap: 10px; }
+  .ctrl input[type=range] { flex: 1; margin: 0; height: 26px; cursor: pointer; }
+  .ctrl .stepbtn {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--hairline);
+    background: var(--bg); color: var(--text); font-size: 19px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .ctrl .stepbtn:hover:not(:disabled) { background: #f0eee8; }
+  .ctrl .stepbtn:disabled { opacity: .35; cursor: not-allowed; }
+  input[type=range].dad { accent-color: var(--dad); }
+  input[type=range].mom { accent-color: var(--mom); }
+  input[type=range].kid { accent-color: var(--kid); }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 22px 2px 0; font-size: 14.5px; color: var(--muted); align-items: center; }
+  .legend .item { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+  .legend .rib { width: 26px; height: 13px; border-radius: 7px; }
+  .legend .ln { width: 26px; height: 0; border-top: 4px solid var(--kid); border-radius: 2px; }
+  .legend .t { color: var(--text); font-weight: 700; }
+
+  /* scenario tabs */
+  .scenarios { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 20px; }
+  .scenarios .scen-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-right: 4px; }
+  /* bulleted notes */
+  .noteswrap { margin: 26px 0 0; }
+  .notes-title { display: flex; align-items: center; gap: 12px; }
+  .notekey { display: inline-flex; align-items: center; gap: 7px; }
+  .notelist { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .noteitem { display: flex; align-items: center; gap: 11px; min-height: 38px; }
+  .noteitem .grip { cursor: grab; color: var(--muted); opacity: 0; font-size: 17px; line-height: 1; padding: 0 2px; flex: none; user-select: none; transition: opacity .12s; }
+  .noteitem:hover .grip { opacity: 0.65; }
+  .noteitem .grip:active { cursor: grabbing; }
+  .noteitem.dragging { opacity: 0.4; }
+  .noteitem.dropover { box-shadow: inset 0 2px 0 var(--kid-dad); }
+  .bmark { appearance: none; border: 0; background: none; padding: 5px; margin: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; border-radius: 7px; flex: none; }
+  .bmark:hover { background: #f0eee8; }
+  .notetext { font-size: 19px; color: var(--text); line-height: 1.42; }
+  .notetext.struck { text-decoration: line-through; color: var(--muted); }
+  .noteitem .nbtn { appearance: none; border: 0; background: none; font: inherit; font-size: 16px; color: var(--muted); cursor: pointer; width: 32px; height: 32px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; }
+  .noteitem .nbtn.edit { opacity: 0; transition: opacity .12s; }
+  .noteitem:hover .nbtn.edit { opacity: 1; }
+  .noteitem .nbtn:hover { background: #f0eee8; color: var(--text); }
+  .noteitem .nbtn.ok { color: var(--ok); }
+  .noteedit { display: flex; align-items: center; gap: 5px; flex: 1; }
+  .noteedit input { flex: 1; border: 1px solid var(--hairline); border-radius: 8px; padding: 8px 12px; font: inherit; font-size: 19px; color: var(--text); background: var(--card); outline: none; }
+  .noteedit input:focus-visible { outline: 2px solid var(--focus); }
+  .addnote { appearance: none; border: 1px dashed var(--hairline); background: none; color: var(--muted); font: inherit; font-size: 15px; font-weight: 700; border-radius: 999px; padding: 8px 15px; cursor: pointer; }
+  .addnote:hover { color: var(--text); background: #f0eee8; }
+
+  /* kid-perspective stats */
+  .statswrap { margin: 26px 0 0; }
+  .stats-h { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin: 0 2px 11px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 12px; }
+  .stat { flex: 1 1 132px; background: var(--card); border: 1px solid var(--hairline); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 7px; }
+  .stat .num { font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -0.015em; color: var(--text); font-variant-numeric: tabular-nums; }
+  .stat .lab { font-size: 13px; color: var(--muted); line-height: 1.32; }
+  .stat.hero { flex: 2 1 268px; background: #fbf1f7; border-color: #ecd2e3; }
+  .stat.hero .num { color: var(--mom); font-size: 40px; }
+  .stat.hero .lab { color: #9a6f87; font-weight: 600; }
+  .stat .delta { font-size: 11.5px; font-weight: 700; margin-top: auto; padding-top: 6px; }
+  .stat .delta.up { color: #2f7d4f; }
+  .stat .delta.down { color: #b0413e; }
+  .stat .delta.zero { color: var(--muted); font-weight: 600; }
+  .stat .nrow { display: inline-flex; align-items: center; gap: 8px; }
+  .stat .nrow svg { color: var(--muted); flex: none; }
+  .tab { display: inline-flex; align-items: center; border: 1px solid var(--hairline); background: var(--card); border-radius: 999px; font-family: inherit; font-size: 14.5px; color: var(--text); white-space: nowrap; }
+  .tab .tabname { appearance: none; border: 0; background: none; font: inherit; color: inherit; padding: 7px 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px 0 0 999px; }
+  .tab .tabname.solo { border-radius: 999px; }
+  .tab .tabicon { appearance: none; border: 0; background: none; font: inherit; color: var(--muted); width: 0; padding: 0; opacity: 0; cursor: pointer; transition: opacity .12s ease, width .12s ease; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; height: 32px; }
+  .tab:hover .tabicon, .tab.active .tabicon { width: 22px; opacity: 1; }
+  .tab .tabicon:last-child { padding-right: 5px; }
+  .tab .tabicon.edit:hover { color: var(--mom); }
+  .tab .tabicon.del:hover { color: #b0413e; }
+  .tab:hover { background: #f0eee8; }
+  .tab.active { background: var(--text); border-color: var(--text); }
+  .tab.active .tabname { color: #fff; }
+  .tab.active:hover { background: #2a2c32; }
+  .tab.active .tabicon { color: rgba(255,255,255,.65); }
+  .tab.active .tabicon.edit:hover, .tab.active .tabicon.del:hover { color: #fff; }
+  .tab .dot { width: 7px; height: 7px; border-radius: 50%; background: #f0c266; flex: none; }
+  .tab.add { border-style: dashed; color: var(--muted); padding: 7px 14px; cursor: pointer; font: inherit; font-size: 14.5px; }
+  .tab.add:hover { color: var(--text); background: #f0eee8; }
+  .tab.update { border-color: #e0c79a; background: #f5ead2; color: #8a6526; padding: 7px 14px; cursor: pointer; font: inherit; font-size: 14.5px; font-weight: 700; }
+  .tab.update:hover { background: #f0e1c0; }
+  .tab.editing { padding: 3px 5px 3px 12px; gap: 4px; }
+  .tab.editing input { border: 0; background: none; font: inherit; font-size: 14.5px; width: 132px; outline: none; color: var(--text); }
+  .tab.editing .ed-btn { appearance: none; border: 0; background: none; font: inherit; cursor: pointer; color: var(--muted); width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+  .tab.editing .ed-btn:hover { background: #e7e4dc; color: var(--text); }
+  .tab.editing .ed-btn.ok { color: var(--mom); }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel">
+
+
+const { useState, useEffect, useRef } = React;
+
+/* ----------------------------------------------------------------------------
+   Calendar: June 5 – July 3, 2026 (29 days)
+---------------------------------------------------------------------------- */
+const N = 53;
+const DATES = Array.from({ length: N }, (_, i) => {const d = new Date(2026, 4, 25);d.setDate(d.getDate() + i);return d;});
+const WD_L = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const MO_S = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MO_L = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const shortDate = (d) => `${MO_S[d.getMonth()]} ${d.getDate()}`;
+const longDate = (d) => `${WD_L[d.getDay()]}, ${MO_L[d.getMonth()]} ${d.getDate()}`;
+
+const CITY = { SC: "Santa Cruz", PDX: "Portland", SD: "San Diego" };
+
+/* Fixed events (day index from May 25 = 0) */
+const WEDDING = 31; // June 25 — San Diego
+const BIRTHDAY = 33; // June 27
+
+/* The custody agreement: starts with Dad, then hands off every other Friday —
+   to Mom Jun 12, Dad Jun 19, Mom Jun 26, Dad Jul 3, Mom Jul 10. */
+const AGREEMENT = { start: "Dad", handoffs: [18, 25, 32, 39, 46] };
+
+const otherParent = (w) => w === "Dad" ? "Mom" : "Dad";
+
+/* Who has the child on day i. Custody starts with `startWith` and flips on each
+   handoff day; handoffs is an editable set of day indices (click the chart). */
+function custodyOf(i, startWith, handoffs) {
+  let n = 0;
+  for (const d of handoffs) if (d <= i) n++;
+  return n % 2 === 1 ? otherParent(startWith) : startWith;
+}
+
+/* Each parent's itinerary is an ordered list of moves {day, from, to}. Dad just
+   relocates to Portland. Mom relocates, then takes a trip: down to San Diego for
+   the wedding, up to Santa Cruz for the birthday, then home to Portland. */
+function dadMovesOf(dadMove, mode) {
+  return [{ day: dadMove, from: "SC", to: "PDX", mode: mode || "fly" }];
+}
+
+/* Turn a list of {day, city, mode} arrivals into transit legs: sort by day and
+   emit a leg whenever the city changes from where she currently is (starting in
+   SC). The arriving waypoint's mode (drive/flight) rides onto the leg.
+   Order-independent, so the Portland move can fall before, during, or after the
+   San Diego / Santa Cruz trip. */
+function waypointsToLegs(waypoints, start) {
+  const wp = waypoints.filter((w) => w.city).slice().sort((a, b) => a.day - b.day);
+  const legs = [];
+  let loc = start;
+  for (const w of wp) {
+    if (w.city !== loc) {legs.push({ day: w.day, from: loc, to: w.city, mode: w.mode || "fly" });loc = w.city;}
+  }
+  return legs;
+}
+
+function momMovesOf(m, modes) {
+  const md = modes || {};
+  const wp = [
+  { day: m.move, city: "PDX", mode: md.momMove }, // relocates to Portland (can be any time)
+  { day: m.sd, city: "SD", mode: md.momSD }, // flies down to San Diego (wedding)
+  { day: m.sc, city: "SC", mode: md.momSC } // up to Santa Cruz (birthday)
+  ];
+  /* she only "returns home to Portland" after the birthday if she'd already
+     moved there before the trip; otherwise the move itself brings her up. */
+  if (m.move < m.sd) wp.push({ day: m.back, city: "PDX", mode: md.momBack });
+  return waypointsToLegs(wp, "SC");
+}
+
+/* whereabouts on day i: a move day is a TRANSIT day (traveling, in neither place) */
+function locState(i, moves, startLoc) {
+  for (const mv of moves) if (mv.day === i) return { transit: true, from: mv.from, to: mv.to };
+  let loc = startLoc;
+  for (const mv of moves) if (i > mv.day) loc = mv.to;
+  return { transit: false, loc };
+}
+
+/* where someone comes to rest on day i — a traveling person resolves to their
+   destination (they end the day there) */
+function resolvedLoc(state) {return state.transit ? state.to : state.loc;}
+
+/* The child's state on day i. A handoff day is a travel day — that whole day
+   he's moving between the parent dropping off and the one picking up. If the
+   custodial parent is themselves traveling, the child rides along. */
+function kidState(i, dadMoves, momMoves, startWith, handoffs) {
+  const stateOf = (w) => w === "Dad" ? locState(i, dadMoves, "SC") : locState(i, momMoves, "SC");
+  const who = custodyOf(i, startWith, handoffs);
+  const prevWho = i > 0 ? custodyOf(i - 1, startWith, handoffs) : who;
+  if (i > 0 && who !== prevWho) {
+    return { transit: true, kind: "handoff", fromWho: prevWho, toWho: who,
+      fromState: stateOf(prevWho), toState: stateOf(who) };
+  }
+  const st = stateOf(who);
+  return { transit: st.transit, kind: st.transit ? "ride" : "settled", who, state: st };
+}
+
+/* On a cross-city handoff, work out who is actually carrying the child and how.
+   The parent who is TRAVELLING that day (their state is transit) carries him, so
+   the leg's mode (drive/fly) is the child's mode. carrier "to" = the receiving
+   parent flew/drove in to get him (colour should switch at the start); carrier
+   "from" = the departing parent takes him and hands off on arrival (colour stays
+   theirs until the end). */
+function handoffTransport(i, ks, dadMoves, momMoves) {
+  const movesOf = (w) => w === "Dad" ? dadMoves : momMoves;
+  if (ks.toState.transit) {
+    const leg = movesOf(ks.toWho).find((l) => l.day === i);
+    return { carrier: "to", mode: leg ? leg.mode : "fly" };
+  }
+  if (ks.fromState.transit) {
+    const leg = movesOf(ks.fromWho).find((l) => l.day === i);
+    return { carrier: "from", mode: leg ? leg.mode : "fly" };
+  }
+  // neither parent travelled that day — assume Dad flies to collect/return the child,
+  // so the carrier is whichever side Dad is on (→ teal line, plane icon)
+  return { carrier: ks.toWho === "Dad" ? "to" : "from", mode: "fly" };
+}
+
+/* the city the child ends day i in (his custodial parent's resolved location) */
+function kidCity(i, dadMoves, momMoves, startWith, handoffs) {
+  const who = custodyOf(i, startWith, handoffs);
+  const st = who === "Dad" ? locState(i, dadMoves, "SC") : locState(i, momMoves, "SC");
+  return resolvedLoc(st);
+}
+
+/* When the child is being handed off between the two extreme lanes (Portland and
+   San Diego), the receiving parent is flying in to its city that day, AND that
+   parent is NOT starting the day in Portland, the parents meet in the middle —
+   Santa Cruz: the departing parent brings him to SC, the receiving parent takes
+   him the rest of the way. (If the receiving parent IS in Portland, she just
+   collects him there and flies down — a single plane.) */
+function meetsInSC(startCity, endCity, ks) {
+  const extremes = startCity === "PDX" && endCity === "SD" || startCity === "SD" && endCity === "PDX";
+  return extremes && ks.toState.transit && ks.toState.from !== "PDX";
+}
+
+/* ----------------------------------------------------------------------------
+   Geometry (SVG viewBox units — the chart scales to any width)
+---------------------------------------------------------------------------- */
+const VW = 1160,VH = 505;
+const laneX0 = 60,laneX1 = 1146;
+const xL = 116,xR = 1098;
+const dx = (xR - xL) / (N - 1);
+const xOf = (i) => xL + i * dx;
+
+const PDX_Y = 112,SC_Y = 262,SD_Y = 412; /* three evenly-spaced lanes */
+const HALF = 46;
+const PDX_PILL = [PDX_Y - HALF, PDX_Y + HALF];
+const SC_PILL = [SC_Y - HALF, SC_Y + HALF];
+const SD_PILL = [SD_Y - HALF, SD_Y + HALF];
+const RIB_LX = laneX0 + 26,RIB_RX = laneX1 - 26;
+const SUB = 27,RIBW = 34;
+
+const LANE = { PDX: PDX_Y, SC: SC_Y, SD: SD_Y };
+const laneY = (loc) => LANE[loc];
+/* y for an actor's ribbon given a location-state and a vertical offset
+   (Dad rides above the lane centre, Mom below). A transit day sits at the
+   midpoint between the two lanes. */
+const stateY = (st, off) => st.transit ? (laneY(st.from) + laneY(st.to)) / 2 + off : laneY(st.loc) + off;
+const DAD_OFF = -SUB,MOM_OFF = +SUB;
+
+/* orthogonal path through a per-day y array. Normal level changes use a
+   right-angle step (riser at the midpoint between the two days). Days listed
+   in `vertical` are travel days: the line goes straight up/down at that day's
+   own x, passing through its midpoint y — no horizontal jog. Right-angle
+   corners are softened with a small fillet radius. */
+const CORNER_R = 11;
+
+function roundedPath(pts, r) {
+  if (pts.length < 2) return "";
+  let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1],p1 = pts[i],p2 = pts[i + 1];
+    const v1x = p1.x - p0.x,v1y = p1.y - p0.y,l1 = Math.hypot(v1x, v1y) || 1;
+    const v2x = p2.x - p1.x,v2y = p2.y - p1.y,l2 = Math.hypot(v2x, v2y) || 1;
+    const rr = Math.min(r, l1 / 2, l2 / 2);
+    const ax = p1.x - v1x / l1 * rr,ay = p1.y - v1y / l1 * rr;
+    const bx = p1.x + v2x / l2 * rr,by = p1.y + v2y / l2 * rr;
+    d += ` L ${ax.toFixed(1)} ${ay.toFixed(1)} Q ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`;
+  }
+  const last = pts[pts.length - 1];
+  d += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
+  return d;
+}
+
+function smoothPath(yArr, xStart, xEnd, vertical) {
+  const V = vertical || new Set();
+  const pts = [{ x: xStart, y: yArr[0] }];
+  let prevY = yArr[0];
+  for (let i = 1; i < yArr.length; i++) {
+    if (V.has(i) && i < yArr.length - 1) {
+      const after = 2 * yArr[i] - prevY; // reflect midpoint -> resolved level
+      pts.push({ x: xOf(i), y: prevY }); // horizontal up to this day
+      pts.push({ x: xOf(i), y: after }); // straight vertical through it
+      prevY = after;
+      continue;
+    }
+    if (yArr[i] !== prevY) {
+      const xm = (xOf(i) + xOf(i - 1)) / 2;
+      pts.push({ x: xm, y: prevY });
+      pts.push({ x: xm, y: yArr[i] });
+      prevY = yArr[i];
+    }
+  }
+  pts.push({ x: xEnd, y: prevY });
+  // drop consecutive duplicate points so corner math never divides by zero
+  const clean = pts.filter((p, i) => i === 0 || p.x !== pts[i - 1].x || p.y !== pts[i - 1].y);
+  return roundedPath(clean, CORNER_R);
+}
+
+/* Like smoothPath, but split into colored runs — one per custody stretch.
+   - a local (same-city) handoff switches colour at the riser midpoint, under the marker
+   - a long-transit handoff where the RECEIVING parent travels in (earlySplit) switches
+     at the PREVIOUS day's dot — the whole travel day is spent with the new parent
+   - a long-transit handoff where the DEPARTING parent carries him and hands off on
+     arrival (lateSplit) keeps the old colour through the riser and switches at the
+     NEXT day's dot */
+function kidRuns(yArr, vertical, handoffSet, earlySplit, lateSplit, colorOf) {
+  const runs = [];
+  let curColor = colorOf(0);
+  let pts = [{ x: RIB_LX, y: yArr[0] }];
+  let prevY = yArr[0];
+  for (let i = 1; i < yArr.length; i++) {
+    if (vertical.has(i) && i < yArr.length - 1) {
+      const after = 2 * yArr[i] - prevY;
+      const x = xOf(i);
+      if (handoffSet.has(i) && earlySplit.has(i)) {
+        const xp = xOf(i - 1); // seam at the previous day's dot
+        pts.push({ x: xp, y: prevY });
+        runs.push({ color: curColor, pts });
+        curColor = colorOf(i);
+        pts = [{ x: xp, y: prevY }, { x, y: prevY }, { x, y: after }];
+      } else if (handoffSet.has(i) && lateSplit.has(i)) {
+        pts.push({ x, y: prevY }); // riser stays the OLD colour
+        pts.push({ x, y: after });
+        const xn = xOf(i + 1); // seam at the next day's dot
+        pts.push({ x: xn, y: after });
+        runs.push({ color: curColor, pts });
+        curColor = colorOf(i);
+        pts = [{ x: xn, y: after }];
+      } else if (handoffSet.has(i)) {
+        pts.push({ x, y: prevY });
+        const mid = yArr[i]; // seam at the riser midpoint (under the marker)
+        pts.push({ x, y: mid });
+        runs.push({ color: curColor, pts });
+        curColor = colorOf(i);
+        pts = [{ x, y: mid }, { x, y: after }];
+      } else {
+        pts.push({ x, y: prevY }); // a ride — no custody change
+        pts.push({ x, y: after });
+      }
+      prevY = after;
+      continue;
+    }
+    if (yArr[i] !== prevY) {
+      const xm = (xOf(i) + xOf(i - 1)) / 2;
+      pts.push({ x: xm, y: prevY });
+      pts.push({ x: xm, y: yArr[i] });
+      prevY = yArr[i];
+    }
+  }
+  pts.push({ x: RIB_RX, y: prevY });
+  runs.push({ color: curColor, pts });
+  return runs.map((r) => {
+    const clean = r.pts.filter((p, i) => i === 0 || p.x !== r.pts[i - 1].x || p.y !== r.pts[i - 1].y);
+    return { color: r.color, d: roundedPath(clean, CORNER_R) };
+  });
+}
+
+function RoundRect({ x0, y0, x1, y1, r, fill, stroke }) {
+  return <rect x={x0} y={y0} width={x1 - x0} height={y1 - y0} rx={r} ry={r} fill={fill} stroke={stroke || "none"} />;
+}
+
+/* small inline glyphs for the travel-mode toggle */
+function PlaneIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flex: "none" }}>
+      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L11 19v-5.5L21 16z" />
+    </svg>);
+
+}
+function CarIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flex: "none" }}>
+      <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-2 0v-1H7v1a1 1 0 0 1-2 0v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h1zm2.2-.5h9.6l-1-3a.5.5 0 0 0-.48-.35H8.68a.5.5 0 0 0-.48.35l-1 3zM6.5 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm11 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+    </svg>);
+
+}
+function HandoffArrowGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flex: "none" }}>
+      <path d="M8 4l4 4H9v8h3l-4 4-4-4h3V8H4l4-4zM16 4l4 4h-3v8h3l-4 4-4-4h3V8h-3l4-4z" opacity="0.55" />
+    </svg>);
+
+}
+/* the per-day dot in a parent's colour, for the stat tiles */
+function DayDot({ parent }) {
+  const dad = parent === "Dad";
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style={{ flex: "none" }}>
+      <circle cx="8" cy="8" r="5" fill={dad ? "oklch(0.86 0.03 190)" : "oklch(0.86 0.04 350)"} stroke={dad ? "var(--kid-dad)" : "var(--kid)"} strokeWidth="2.4" />
+    </svg>);
+
+}
+
+/* small green/red delta line: days more/fewer than the custody agreement */
+function Delta({ d }) {
+  if (d === 0) return <div className="delta zero">same as agreement</div>;
+  const pos = d > 0;
+  const n = Math.abs(d);
+  return (
+    <div className={"delta " + (pos ? "up" : "down")}>
+      {pos ? "+" : "\u2212"}{n} {n === 1 ? "day" : "days"} vs. agreement
+    </div>);
+
+}
+
+/* A handoff marker: a small arrow pointing the way he's going — DOWN to Mom,
+/* A handoff marker: a small arrow pointing the way he's going — DOWN to Mom,
+   UP to Dad. Outlined in the colour of the parent he's coming FROM; white inside,
+   or a pale green inside when the handoff lands on a Friday. */
+function HandoffArrow({ cx, cy, dir, friday, outline }) {
+  const s = 7,head = 6.5; // half-width, head reach
+  const tip = dir === "down" ? cy + head : cy - head;
+  const base = dir === "down" ? cy - 4.5 : cy + 4.5;
+  return (
+    <polygon points={`${cx - s},${base} ${cx + s},${base} ${cx},${tip}`}
+    fill={friday ? "#f5e08c" : "#ffffff"} stroke={outline || "var(--kid)"} strokeWidth="2.2" strokeLinejoin="round" />);
+
+}
+
+/* A pill-shaped annotation chip with a dotted leader line connecting it to a
+   point on the child line. */
+/* A pill-shaped annotation chip with a dotted leader line connecting it to an
+   anchor dot at (toX, toY). `color` themes the chip, dot and leader. */
+function AnnotationChip({ label, x, y, toX, toY, color }) {
+  const c = color || "var(--kid)";
+  const w = label.length * 7.4 + 22,h = 25;
+  return (
+    <g>
+      <line x1={x} y1={y} x2={toX} y2={toY} stroke={c} strokeWidth="1.4" strokeDasharray="1.5 3.5" opacity="0.7" />
+      <circle cx={toX} cy={toY} r="4.5" fill="var(--lane)" stroke={c} strokeWidth="2" />
+      <rect x={x - w / 2} y={y - h / 2} width={w} height={h} rx={h / 2} fill="var(--lane)" stroke={c} strokeWidth="1.5" />
+      <text x={x} y={y + 4.5} textAnchor="middle" fontSize="13.5" fontWeight="700" fill={c}>{label}</text>
+    </g>);
+
+}
+
+/* Chart-native travel glyphs, drawn pointing UP and rotated 180° to point down.
+   A cream halo (paint-order: stroke) keeps them legible over the child line. */
+function ChartPlane({ cx, cy, dir, color }) {
+  const c = color || "var(--kid)";
+  return (
+    <g transform={`translate(${cx},${cy}) rotate(${dir === "down" ? 180 : 0})`}>
+      <path d="M0,-8.5 C0.9,-8.5 1.3,-6.8 1.3,-5 L1.3,-2.2 L7.6,2 L7.6,3.8 L1.3,1.9 L1.3,5.2 L3.3,6.9 L3.3,8.3 L0,7.2 L-3.3,8.3 L-3.3,6.9 L-1.3,5.2 L-1.3,1.9 L-7.6,3.8 L-7.6,2 L-1.3,-2.2 L-1.3,-5 C-1.3,-6.8 -0.9,-8.5 0,-8.5 Z"
+      fill={c} stroke="var(--lane)" strokeWidth="2.4" strokeLinejoin="round" style={{ paintOrder: "stroke" }} />
+    </g>);
+
+}
+function ChartCar({ cx, cy, dir, color }) {
+  const c = color || "var(--kid)";
+  return (
+    <g transform={`translate(${cx},${cy}) rotate(${dir === "down" ? 180 : 0})`}>
+      <rect x="-4.8" y="-7.8" width="9.6" height="15.6" rx="3.4" fill={c} stroke="var(--lane)" strokeWidth="2.4" style={{ paintOrder: "stroke" }} />
+      <rect x="-3" y="-4.9" width="6" height="3.4" rx="1.2" fill="var(--lane)" />
+      <rect x="-3" y="1.6" width="6" height="3" rx="1.2" fill="var(--lane)" opacity="0.7" />
+    </g>);
+
+}
+
+/* Decompose a parent's itinerary into horizontal (settled) and vertical (transit)
+   ribbon segments, so the verticals can be drawn translucent beneath the runs. */
+function ribbonSegs(legs, off) {
+  const horiz = [],vert = [];
+  let loc = "SC",x0 = RIB_LX;
+  for (const leg of legs) {
+    const x = xOf(leg.day);
+    const y = laneY(loc) + off;
+    horiz.push({ x1: x0, y1: y, x2: x, y2: y });
+    vert.push({ x1: x, y1: laneY(leg.from) + off, x2: x, y2: laneY(leg.to) + off });
+    loc = leg.to;x0 = x;
+  }
+  horiz.push({ x1: x0, y1: laneY(loc) + off, x2: RIB_RX, y2: laneY(loc) + off });
+  return { horiz, vert };
+}
+
+/* ----------------------------------------------------------------------------
+   Diagram
+---------------------------------------------------------------------------- */
+function Diagram({ dadMove, mom, modes, startWith, handoffs, hover, setHover, onToggleDay }) {
+  const dadMoves = dadMovesOf(dadMove, modes.dad);
+  const momMoves = momMovesOf(mom, modes);
+
+  const dadY = Array.from({ length: N }, (_, i) => stateY(locState(i, dadMoves, "SC"), DAD_OFF));
+  const momY = Array.from({ length: N }, (_, i) => stateY(locState(i, momMoves, "SC"), MOM_OFF));
+  /* where the child comes to rest each day: the custodial parent's RESOLVED
+     location (a parent mid-flight resolves to their destination). This makes a
+     handoff that lands on the receiving parent's travel day resolve straight
+     through to where she ends up — no intermediate jog. */
+  const restY = Array.from({ length: N }, (_, i) => {
+    const who = custodyOf(i, startWith, handoffs);
+    const st = who === "Dad" ? locState(i, dadMoves, "SC") : locState(i, momMoves, "SC");
+    return laneY(resolvedLoc(st)) + (who === "Dad" ? DAD_OFF : MOM_OFF);
+  });
+  /* a travel day for the child = a handoff or riding a moving parent */
+  const kidTravel = Array.from({ length: N }, (_, i) => i > 0 && kidState(i, dadMoves, momMoves, startWith, handoffs).transit);
+  /* on a travel day the line is drawn at the midpoint between yesterday's and
+     today's resting spots, then the vertical riser carries it the rest of the way */
+  const kidY = Array.from({ length: N }, (_, i) => kidTravel[i] ? (restY[i - 1] + restY[i]) / 2 : restY[i]);
+
+  /* travel days = vertical risers (no horizontal jog) */
+  const dadVertical = new Set();dadMoves.forEach((mv) => {if (mv.day > 0 && mv.day < N - 1) dadVertical.add(mv.day);});
+  const momVertical = new Set();momMoves.forEach((mv) => {if (mv.day > 0 && mv.day < N - 1) momVertical.add(mv.day);});
+  const kidVertical = new Set();
+  for (let i = 1; i < N - 1; i++) if (kidTravel[i]) kidVertical.add(i);
+
+  const dadPath = smoothPath(dadY, RIB_LX, RIB_RX, dadVertical);
+  const momPath = smoothPath(momY, RIB_LX, RIB_RX, momVertical);
+  const kidPath = smoothPath(kidY, RIB_LX, RIB_RX, kidVertical);
+
+  /* parent ribbons split into segments (translucent verticals under opaque runs) */
+  const dadRib = ribbonSegs(dadMoves, DAD_OFF);
+  const momRib = ribbonSegs(momMoves, MOM_OFF);
+  const DAD_C = "var(--dad-rib)";
+  const MOM_C = "#c4a4db";
+
+  /* handoff days — where custody flips (each is a travel day on the child line) */
+  const handoffDays = [];
+  for (let i = 1; i < N; i++) if (custodyOf(i, startWith, handoffs) !== custodyOf(i - 1, startWith, handoffs)) handoffDays.push(i);
+
+  /* the child's line/dots take the colour of the parent he's with */
+  const custodyColor = (i) => custodyOf(i, startWith, handoffs) === "Dad" ? "var(--kid-dad)" : "var(--kid)";
+  const dotFill = (i) => custodyOf(i, startWith, handoffs) === "Dad" ? "oklch(0.86 0.03 190)" : "oklch(0.86 0.04 350)";
+  /* a handoff is a long transit when the child actually changes cities. The carrier
+     decides where the colour switches: receiving parent travels in → switch at the
+     previous dot (early); departing parent carries & hands off on arrival → switch
+     at the next dot (late). */
+  const childCity = (i) => kidCity(i, dadMoves, momMoves, startWith, handoffs);
+  const earlySplit = new Set();
+  const lateSplit = new Set();
+  for (const i of handoffDays) {
+    const sc = childCity(i - 1),ec = childCity(i);
+    if (sc === ec) continue; // same city → local exchange (midpoint)
+    const ks = kidState(i, dadMoves, momMoves, startWith, handoffs);
+    if (meetsInSC(sc, ec, ks)) continue; // meet in Santa Cruz → midpoint split
+    if (handoffTransport(i, ks, dadMoves, momMoves).carrier === "from") lateSplit.add(i);else
+    earlySplit.add(i);
+  }
+  const kidRunsArr = kidRuns(kidY, kidVertical, new Set(handoffDays), earlySplit, lateSplit, custodyColor);
+
+  /* per-day kid marker: dot (settled), plane/car (long travel, facing the way he
+     moves), or arrow (a local same-city handoff). Friday handoffs read green. */
+  const travelDir = (i) => restY[i] < restY[i - 1] ? "up" : "down";
+  const kidMark = Array.from({ length: N }, (_, i) => {
+    if (i === 0) return { type: "dot" };
+    const ks = kidState(i, dadMoves, momMoves, startWith, handoffs);
+    const fri = DATES[i].getDay() === 5;
+    if (ks.kind === "handoff") {
+      const sc = childCity(i - 1),ec = childCity(i);
+      const cross = sc !== ec;
+      if (cross) {
+        if (meetsInSC(sc, ec, ks)) {
+          const ya = restY[i - 1],yb = restY[i];
+          return { type: "meetSC", ya, yb, dir: yb > ya ? "down" : "up",
+            c1: custodyColor(i - 1), c2: custodyColor(i),
+            tdir: custodyOf(i, startWith, handoffs) === "Mom" ? "down" : "up",
+            tout: custodyColor(i - 1), friday: fri };
+        }
+        const tr = handoffTransport(i, ks, dadMoves, momMoves);
+        const carrierColor = tr.carrier === "from" ? custodyColor(i - 1) : custodyColor(i);
+        return { type: tr.mode === "drive" ? "car" : "plane", dir: travelDir(i), color: carrierColor };
+      }
+      return { type: "arrow", dir: custodyOf(i, startWith, handoffs) === "Mom" ? "down" : "up", friday: fri,
+        fromColor: custodyOf(i - 1, startWith, handoffs) === "Dad" ? "var(--kid-dad)" : "var(--kid)" };
+    }
+    if (ks.kind === "ride") {
+      const who = custodyOf(i, startWith, handoffs);
+      const leg = (who === "Dad" ? dadMoves : momMoves).find((l) => l.day === i);
+      return { type: leg && leg.mode === "drive" ? "car" : "plane", dir: travelDir(i), color: custodyColor(i) };
+    }
+    return { type: "dot" };
+  });
+
+  const axisTicks = [0, 7, 13, 20, 26, 33, 39, 46, 52];
+
+  function onMove(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const vx = (e.clientX - r.left) / r.width * VW;
+    let i = Math.round((vx - xL) / dx);
+    i = Math.max(0, Math.min(N - 1, i));
+    setHover(i);
+  }
+
+  return (
+    <svg className="diagram" viewBox={`0 0 ${VW} ${VH}`} role="img"
+    aria-label="String diagram of where the child is each day"
+    onMouseMove={onMove} onMouseLeave={() => setHover(-1)}>
+
+      {/* lane labels */}
+      <text x={laneX0 - 8} y={PDX_Y + 7} textAnchor="end" fontSize="22" fontWeight="700" fill="var(--pdx)">PDX</text>
+      <text x={laneX0 - 8} y={SC_Y + 7} textAnchor="end" fontSize="22" fontWeight="700" fill="var(--sc)">SC</text>
+      <text x={laneX0 - 8} y={SD_Y + 7} textAnchor="end" fontSize="22" fontWeight="700" fill="var(--sd)">SD</text>
+
+      {/* lane pills */}
+      <RoundRect x0={laneX0} y0={PDX_PILL[0]} x1={laneX1} y1={PDX_PILL[1]} r={32} fill="var(--lane)" />
+      <RoundRect x0={laneX0} y0={SC_PILL[0]} x1={laneX1} y1={SC_PILL[1]} r={32} fill="var(--lane)" />
+      <RoundRect x0={laneX0} y0={SD_PILL[0]} x1={laneX1} y1={SD_PILL[1]} r={32} fill="var(--lane)" />
+
+      {/* top date axis */}
+      {axisTicks.map((i) =>
+      <text key={i} x={xOf(i)} y={42} textAnchor="middle" fontSize="14.5" fill="var(--muted)">{shortDate(DATES[i])}</text>
+      )}
+
+      {/* parent ribbons — translucent vertical transit risers, opaque horizontal runs on top */}
+      {dadRib.vert.map((s, j) => <line key={"dv" + j} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={DAD_C} strokeWidth={RIBW} strokeLinecap="round" opacity="0.5" />)}
+      {momRib.vert.map((s, j) => <line key={"mv" + j} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={MOM_C} strokeWidth={RIBW} strokeLinecap="round" opacity="0.5" />)}
+      {dadRib.horiz.map((s, j) => <line key={"dh" + j} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={DAD_C} strokeWidth={RIBW} strokeLinecap="round" />)}
+      {momRib.horiz.map((s, j) => <line key={"mh" + j} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={MOM_C} strokeWidth={RIBW} strokeLinecap="round" />)}
+
+      {/* child line — cream halo, then coloured runs matching the parent he's with */}
+      <path d={kidPath} fill="none" stroke="var(--lane)" strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />
+      {kidRunsArr.map((r, j) => <path key={j} d={r.d} fill="none" stroke={r.color} strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" />)}
+
+      {/* per-day kid markers: dot (settled), plane/car (long travel), arrow (local handoff) */}
+      {kidMark.map((m, i) => {
+        if (m.type === "dot") return <circle key={i} cx={xOf(i)} cy={kidY[i]} r={4} fill={dotFill(i)} stroke={custodyColor(i)} strokeWidth="2" />;
+        if (m.type === "arrow") return <HandoffArrow key={i} cx={xOf(i)} cy={kidY[i]} dir={m.dir} friday={m.friday} outline={m.fromColor} />;
+        if (m.type === "meetSC") {
+          const ysc = (m.ya + m.yb) / 2,y1 = (3 * m.ya + m.yb) / 4,y2 = (m.ya + 3 * m.yb) / 4;
+          return (
+            <g key={i}>
+              <ChartPlane cx={xOf(i)} cy={y1} dir={m.dir} color={m.c1} />
+              <ChartPlane cx={xOf(i)} cy={y2} dir={m.dir} color={m.c2} />
+              <HandoffArrow cx={xOf(i)} cy={ysc} dir={m.tdir} friday={m.friday} outline={m.tout} />
+            </g>);
+        }
+        const col = m.color || "var(--kid)";
+        if (m.type === "plane") return <ChartPlane key={i} cx={xOf(i)} cy={kidY[i]} dir={m.dir} color={col} />;
+        if (m.type === "car") return <ChartCar key={i} cx={xOf(i)} cy={kidY[i]} dir={m.dir} color={col} />;
+        return null;
+      })}
+
+      {/* event markers — anchored to the EVENT's city (wedding in San Diego, birthday
+             in Santa Cruz), at Mom's lane position there, regardless of who is actually
+             present. Neutral black/white so they read as fixed calendar events. */}
+      <AnnotationChip label="Wedding" color="var(--text)" x={xOf(WEDDING)} y={SD_PILL[1] + 28} toX={xOf(WEDDING)} toY={SD_Y + MOM_OFF} />
+      <AnnotationChip label="Birthday" color="var(--text)" x={xOf(BIRTHDAY) + 58} y={SC_Y + MOM_OFF + 44} toX={xOf(BIRTHDAY)} toY={SC_Y + MOM_OFF} />
+
+      {/* hover indicator */}
+      {hover >= 0 &&
+      <g>
+          <line x1={xOf(hover)} y1={56} x2={xOf(hover)} y2={SD_PILL[1] + 6} stroke="var(--text)" strokeWidth="1.5" strokeDasharray="2 4" opacity="0.5" />
+          <circle cx={xOf(hover)} cy={kidY[hover]} r="6.5" fill={custodyColor(hover)} stroke="var(--lane)" strokeWidth="2" />
+        </g>
+      }
+
+      {/* invisible click targets on every day — toggle a handoff (or, on the
+                     first day, flip who he starts with) */}
+      {Array.from({ length: N }, (_, i) =>
+      <circle key={i} className="dayhit" cx={xOf(i)} cy={kidY[i]} r={13} fill="transparent"
+      onClick={() => onToggleDay(i)}>
+          <title>{i === 0 ? "Click to flip who he starts with" : handoffDays.includes(i) ? "Click to remove this handoff" : "Click to make this a handoff"}</title>
+        </circle>
+      )}
+    </svg>);
+
+}
+
+/* ----------------------------------------------------------------------------
+   Slider control
+---------------------------------------------------------------------------- */
+function Slider({ kind, label, value, min, max, onChange, mode, onMode }) {
+  const swatch = kind === "kid" ?
+  <span className="sw line" style={{ background: "var(--kid)" }} /> :
+  <span className="sw" style={{ background: `var(--${kind}-rib)` }} />;
+  return (
+    <div className="ctrl">
+      <div className="top">{swatch}<span className="k">{label}</span></div>
+      <div className="vrow">
+        <div className="v">{longDate(DATES[value])}</div>
+        {onMode &&
+        <div className="modetog" role="group" aria-label={`${label}: travel mode`}>
+          <button className={"mt" + (mode !== "drive" ? " on" : "")} onClick={() => onMode("fly")} aria-pressed={mode !== "drive"}>
+            <PlaneIcon /> Flight
+          </button>
+          <button className={"mt" + (mode === "drive" ? " on" : "")} onClick={() => onMode("drive")} aria-pressed={mode === "drive"}>
+            <CarIcon /> Drive
+          </button>
+        </div>}
+      </div>
+      <div className="row">
+        <button className="stepbtn" onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} aria-label={`${label}: one day earlier`}>{"\u2212"}</button>
+        <input type="range" className={kind} min={min} max={max} step={1} value={value}
+        onChange={(e) => onChange(+e.target.value)}
+        aria-label={`${label}: ${longDate(DATES[value])}`} aria-valuetext={longDate(DATES[value])} />
+        <button className="stepbtn" onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max} aria-label={`${label}: one day later`}>{"+"}</button>
+      </div>
+    </div>);
+
+}
+
+/* ----------------------------------------------------------------------------
+   App
+---------------------------------------------------------------------------- */
+function load(key, fb) {try {const v = JSON.parse(localStorage.getItem(key));return Number.isInteger(v) ? v : fb;} catch (e) {return fb;}}
+function loadAny(key, fb) {try {const v = JSON.parse(localStorage.getItem(key));return v == null ? fb : v;} catch (e) {return fb;}}
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+/* notes are a list of bullets {id, text, status}; status ∈ pro|con|request|olive.
+   Accepts a legacy string, and migrates the older bullet/check/x statuses. */
+function migrateStatus(s) {
+  return ({ bullet: "tradeoff", check: "pro", x: "con", request: "tradeoff", olive: "tradeoff" })[s] || s || "tradeoff";
+}
+function normNotes(n) {
+  if (Array.isArray(n)) return n.map((b) => ({ id: b.id || uid(), text: b.text || "", status: migrateStatus(b.status) }));
+  if (typeof n === "string" && n.trim()) return [{ id: uid(), text: n.trim(), status: "request" }];
+  return [];
+}
+function notesEqual(a, b) {
+  const na = normNotes(a),nb = normNotes(b);
+  return na.length === nb.length && na.every((x, i) => x.text === nb[i].text && x.status === nb[i].status);
+}
+
+/* a status glyph at a given size:
+   pro = beige check in a green circle · con = beige x in a red circle ·
+   tradeoff = a blue two-way left-right arrow */
+function StatusGlyph({ status, size }) {
+  const s = size || 22;
+  const beige = "#f2ead9";
+  if (status === "pro")
+    return <svg width={s} height={s} viewBox="0 0 24 24" aria-hidden="true" style={{ flex: "none" }}><circle cx="12" cy="12" r="11" fill="var(--ok)" /><path d="M6.8 12.4l3.3 3.3L17 8.3" fill="none" stroke={beige} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+  if (status === "con")
+    return <svg width={s} height={s} viewBox="0 0 24 24" aria-hidden="true" style={{ flex: "none" }}><circle cx="12" cy="12" r="11" fill="#b0413e" /><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke={beige} strokeWidth="2.6" strokeLinecap="round" /></svg>;
+  return <svg width={s} height={s} viewBox="0 0 24 24" aria-hidden="true" style={{ flex: "none" }}><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4" fill="none" stroke="#2f6fd0" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
+/* a bullet's marker — cycles pro → con → tradeoff on click */
+function BulletMark({ status, onClick }) {
+  const label = status === "pro" ? "Pro — click to change" : status === "con" ? "Con — click to change" : "Tradeoff — click to change";
+  return <button type="button" className="bmark" onClick={onClick} title={label} aria-label={label}><StatusGlyph status={status} size={26} /></button>;
+}
+
+/* Bulleted notes for a scenario: cycle a bullet's status, edit text, add/remove. */
+function NotesList({ notes, setNotes }) {
+  const [editing, setEditing] = useState(null);
+  const [draft, setDraft] = useState("");
+  const [dragId, setDragId] = useState(null);
+  const [overId, setOverId] = useState(null);
+  const list = normNotes(notes);
+  const cycle = { pro: "con", con: "tradeoff", tradeoff: "pro" };
+  const rotate = (id) => setNotes(list.map((n) => n.id === id ? { ...n, status: cycle[n.status] || "con" } : n));
+  const startEdit = (n) => {setEditing(n.id);setDraft(n.text);};
+  const commit = () => {
+    const t = draft.trim();
+    setNotes(list.map((n) => n.id === editing ? { ...n, text: t } : n).filter((n) => n.text));
+    setEditing(null);setDraft("");
+  };
+  const remove = (id) => {setNotes(list.filter((n) => n.id !== id));setEditing(null);};
+  const add = () => {const id = uid();setNotes([...list, { id, text: "", status: "tradeoff" }]);setEditing(id);setDraft("");};
+  const reorder = (fromId, toId) => {
+    if (!fromId || fromId === toId) return;
+    const arr = list.slice();
+    const fi = arr.findIndex((n) => n.id === fromId), ti = arr.findIndex((n) => n.id === toId);
+    if (fi < 0 || ti < 0) return;
+    const [moved] = arr.splice(fi, 1);
+    arr.splice(ti, 0, moved);
+    setNotes(arr);
+  };
+
+  return (
+    <div className="noteswrap">
+      <div className="stats-h notes-title">
+        <span>Pros, cons, and tradeoffs</span>
+        <span className="notekey">
+          <StatusGlyph status="pro" size={20} />
+          <StatusGlyph status="con" size={20} />
+          <StatusGlyph status="tradeoff" size={20} />
+        </span>
+      </div>
+      <ul className="notelist">
+        {list.map((n) =>
+        <li key={n.id} className={"noteitem" + (dragId === n.id ? " dragging" : "") + (overId === n.id && dragId !== n.id ? " dropover" : "")}
+            onDragOver={(e) => {if (dragId) {e.preventDefault();setOverId(n.id);}}}
+            onDrop={(e) => {e.preventDefault();reorder(dragId, n.id);setDragId(null);setOverId(null);}}>
+            <span className="grip" draggable={editing !== n.id} title="Drag to reorder"
+                  onDragStart={(e) => {setDragId(n.id);e.dataTransfer.effectAllowed = "move";}}
+                  onDragEnd={() => {setDragId(null);setOverId(null);}}>⠿</span>
+            <BulletMark status={n.status} onClick={() => rotate(n.id)} />
+            {editing === n.id ?
+          <form className="noteedit" onSubmit={(e) => {e.preventDefault();commit();}}>
+                <input autoFocus value={draft} placeholder="Note…" onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {if (e.key === "Escape") {setEditing(null);setDraft("");}}} />
+                <button type="submit" className="nbtn ok" title="Save">✓</button>
+                <button type="button" className="nbtn" title="Delete" onClick={() => remove(n.id)}>🗑</button>
+              </form> :
+
+          <React.Fragment>
+                <span className="notetext">{n.text}</span>
+                <button type="button" className="nbtn edit" title="Edit" onClick={() => startEdit(n)}>✎</button>
+              </React.Fragment>
+          }
+          </li>
+        )}
+      </ul>
+      <button type="button" className="addnote" onClick={add}>+ Add note</button>
+    </div>);
+
+}
+
+/* Saved-scenario tab bar: load, save, rename, update, delete — persisted. */
+function ScenarioBar({ scenarios, highlightId, activeId, dirty, onLoad, onSaveNew, onUpdate, onRename, onDelete }) {
+  const [editing, setEditing] = useState(null); // scenario id, "__new__", or null
+  const [draft, setDraft] = useState("");
+  const active = scenarios.find((s) => s.id === activeId);
+
+  function commit() {
+    const name = draft.trim();
+    if (!name) {setEditing(null);return;}
+    if (editing === "__new__") onSaveNew(name);else
+    onRename(editing, name);
+    setEditing(null);setDraft("");
+  }
+
+  const EditPill = ({ placeholder }) =>
+  <form className="tab editing" onSubmit={(e) => {e.preventDefault();commit();}}>
+      <input autoFocus value={draft} placeholder={placeholder} maxLength={32}
+    onChange={(e) => setDraft(e.target.value)}
+    onKeyDown={(e) => {if (e.key === "Escape") {setEditing(null);setDraft("");}}} />
+      <button type="submit" className="ed-btn ok" title="Save">✓</button>
+      <button type="button" className="ed-btn" title="Cancel" onClick={() => {setEditing(null);setDraft("");}}>×</button>
+    </form>;
+
+
+  return (
+    <div className="scenarios">
+      <span className="scen-label">Scenarios</span>
+
+      {scenarios.map((s) =>
+      editing === s.id ?
+      <EditPill key={s.id} placeholder="Name" /> :
+
+      <div key={s.id} className={"tab" + (s.id === highlightId ? " active" : "")}>
+            <button className="tabname" onClick={() => onLoad(s)} title={`Load “${s.name}”`}>
+              {s.name}
+              {s.id === activeId && dirty && <span className="dot" title="Unsaved changes" />}
+            </button>
+            <button className="tabicon edit" title="Rename" onClick={() => {setEditing(s.id);setDraft(s.name);}}>✎</button>
+            <button className="tabicon del" title="Delete" onClick={() => {if (confirm(`Delete scenario “${s.name}”?`)) onDelete(s.id);}}>×</button>
+          </div>
+
+      )}
+
+      {editing === "__new__" ?
+      <EditPill placeholder="Name this scenario" /> :
+      <button className="tab add" onClick={() => {setEditing("__new__");setDraft("");}}>+ Save current</button>}
+
+      {dirty && active &&
+      <button className="tab update" onClick={() => onUpdate(active.id)}>Update “{active.name}”</button>
+      }
+    </div>);
+
+}
+
+/* Baked-in default scenarios + notes, so a fresh page (e.g. on GitHub) opens
+   already populated. A visitor's own edits still save to their browser only. */
+const SEED = {
+  active: "mprg8u0xvbfs",
+  scenarios: JSON.parse(`[{"id":"mprag5dij8n4","name":"Move on the 13th","params":{"dad":21,"mom":19,"momsd":30,"momsc":32,"momback":34,"start":"Dad","handoffs":[5,7,18,25,30,41,46],"modes":{"dad":"drive","momMove":"drive","momSD":"fly","momSC":"fly","momBack":"fly"},"notes":[{"id":"mprhx1cbgul8","text":"Help from your dad","status":"pro"},{"id":"mprhl632w4hj","text":"Path of least resistance","status":"pro"},{"id":"mprhd5b3ha2m","text":"Kiddo doesn't get enough time with you before the move","status":"con"}]}},{"id":"mpreysf9vzkv","name":"Move on the 19th","params":{"dad":21,"mom":25,"momsd":30,"momsc":32,"momback":34,"start":"Dad","handoffs":[5,7,18,25,30,41,46],"modes":{"dad":"drive","momMove":"drive","momSD":"fly","momSC":"fly","momBack":"fly"},"notes":[{"id":"mprhweovp5dj","text":"Kiddo gets more time in Santa Cruz before the move","status":"pro"},{"id":"mprhxy8vui5h","text":"Doesn't require any more negotiating with Joey","status":"pro"},{"id":"mprhwqx0g7e4","text":"No help from your dad","status":"con"}]}},{"id":"mprf5ooorikk","name":"Move on the 28th","params":{"dad":21,"mom":34,"momsd":30,"momsc":32,"momback":34,"start":"Dad","handoffs":[5,7,18,25,30,41,46],"modes":{"dad":"drive","momMove":"drive","momSD":"fly","momSC":"fly","momBack":"fly"},"notes":[{"id":"mpri3i2oyp85","text":"Less moving for you","status":"pro"},{"id":"mprhz4a0ejpz","text":"Joey gets the dates he wants but would need to get Kiddo up to Portland and back","status":"tradeoff"},{"id":"mpri18vxtp5h","text":"Might involve more tension with Joey than other options","status":"con"},{"id":"mprhzunl8108","text":"This option has more flights for the Kiddo than any other","status":"con"},{"id":"mpri55a37jtr","text":"No help from your dad","status":"con"}]}},{"id":"mprg8u0xvbfs","name":"3 weeks on, 2 weeks off","params":{"dad":21,"mom":34,"momsd":30,"momsc":32,"momback":34,"start":"Dad","handoffs":[5,7,18,39],"modes":{"dad":"drive","momMove":"drive","momSD":"fly","momSC":"fly","momBack":"fly"},"notes":[{"id":"mprgo2e29fna","text":"Most days in Santa Cruz for kiddo","status":"pro"},{"id":"mpri8vteo59l","text":"Less travel for you and Kiddo than any other option","status":"pro"},{"id":"mpri4vneza9k","text":"No help from your dad","status":"con"},{"id":"mpri6hiimxl3","text":"You'd have kiddo for 3 weeks straight, but you could offer Joey two consecutive weeks after your get to Portland","status":"tradeoff"},{"id":"mpri76g8ohcm","text":"Joey would get more days with Kiddo in this scenario than in any other","status":"tradeoff"}]}}]`),
+};
+SEED.params = SEED.scenarios.find((s) => s.id === SEED.active).params;
+
+function App() {
+  const [dadMove, setDadMove] = useState(() => load("mt4_dad", SEED.params.dad));
+  const [momMove, setMomMove] = useState(() => load("mt4_mom", SEED.params.mom));
+  const [momSD, setMomSD] = useState(() => load("mt4_momsd", SEED.params.momsd));
+  const [momSC, setMomSC] = useState(() => load("mt4_momsc", SEED.params.momsc));
+  const [momBack, setMomBack] = useState(() => load("mt4_momback", SEED.params.momback));
+  const [startWith, setStartWith] = useState(() => loadAny("mt4_start", SEED.params.start));
+  const [handoffs, setHandoffs] = useState(() => loadAny("mt4_handoffs", SEED.params.handoffs));
+  const [modes, setModes] = useState(() => loadAny("mt4_modes", SEED.params.modes));
+  const [scenarios, setScenarios] = useState(() => loadAny("mt4_scenarios", SEED.scenarios));
+  const [activeId, setActiveId] = useState(() => loadAny("mt4_active", SEED.active));
+  const [notes, setNotes] = useState(() => normNotes(loadAny("mt4_notes", SEED.params.notes)));
+  const [hover, setHover] = useState(-1);
+
+  useEffect(() => {localStorage.setItem("mt4_dad", JSON.stringify(dadMove));}, [dadMove]);
+  useEffect(() => {localStorage.setItem("mt4_mom", JSON.stringify(momMove));}, [momMove]);
+  useEffect(() => {localStorage.setItem("mt4_momsd", JSON.stringify(momSD));}, [momSD]);
+  useEffect(() => {localStorage.setItem("mt4_momsc", JSON.stringify(momSC));}, [momSC]);
+  useEffect(() => {localStorage.setItem("mt4_momback", JSON.stringify(momBack));}, [momBack]);
+  useEffect(() => {localStorage.setItem("mt4_start", JSON.stringify(startWith));}, [startWith]);
+  useEffect(() => {localStorage.setItem("mt4_handoffs", JSON.stringify(handoffs));}, [handoffs]);
+  useEffect(() => {localStorage.setItem("mt4_modes", JSON.stringify(modes));}, [modes]);
+  useEffect(() => {localStorage.setItem("mt4_scenarios", JSON.stringify(scenarios));}, [scenarios]);
+  useEffect(() => {localStorage.setItem("mt4_active", JSON.stringify(activeId));}, [activeId]);
+  useEffect(() => {localStorage.setItem("mt4_notes", JSON.stringify(notes));}, [notes]);
+
+  /* ---- scenario snapshot helpers ---- */
+  const DEFMODES = { dad: "drive", momMove: "drive", momSD: "fly", momSC: "fly", momBack: "fly" };
+  const normModes = (m) => ({ ...DEFMODES, ...(m || {}) });
+  const curParams = { dad: dadMove, mom: momMove, momsd: momSD, momsc: momSC, momback: momBack, start: startWith, handoffs: handoffs, modes: modes, notes: notes };
+  function paramsEqual(a, b) {
+    const ma = normModes(a.modes),mb = normModes(b.modes);
+    return a.dad === b.dad && a.mom === b.mom && a.momsd === b.momsd && a.momsc === b.momsc &&
+    a.momback === b.momback && a.start === b.start &&
+    a.handoffs.length === b.handoffs.length && a.handoffs.every((d, i) => d === b.handoffs[i]) &&
+    ma.dad === mb.dad && ma.momMove === mb.momMove && ma.momSD === mb.momSD && ma.momSC === mb.momSC && ma.momBack === mb.momBack &&
+    notesEqual(a.notes, b.notes);
+  }
+  function applyParams(p) {
+    setDadMove(p.dad);setMomMove(p.mom);setMomSD(p.momsd);setMomSC(p.momsc);
+    setNotes(normNotes(p.notes));
+    setMomBack(p.momback);setStartWith(p.start);setHandoffs(p.handoffs.slice());
+    setModes(normModes(p.modes));
+  }
+  const exactMatch = scenarios.find((s) => paramsEqual(s.params, curParams));
+  const highlightId = exactMatch ? exactMatch.id : activeId;
+  const activeScenario = scenarios.find((s) => s.id === activeId);
+  const dirty = !exactMatch && !!activeScenario && !paramsEqual(activeScenario.params, curParams);
+
+  const loadScenario = (s) => {applyParams(s.params);setActiveId(s.id);};
+  const saveNew = (name) => {const id = uid();setScenarios([...scenarios, { id, name, params: { ...curParams, handoffs: handoffs.slice() } }]);setActiveId(id);};
+  const updateScenario = (id) => setScenarios(scenarios.map((s) => s.id === id ? { ...s, params: { ...curParams, handoffs: handoffs.slice() } } : s));
+  const renameScenario = (id, name) => setScenarios(scenarios.map((s) => s.id === id ? { ...s, name } : s));
+  const deleteScenario = (id) => {setScenarios(scenarios.filter((s) => s.id !== id));if (activeId === id) setActiveId(null);};
+
+  const mom = { move: momMove, sd: momSD, sc: momSC, back: momBack };
+  const dadMoves = dadMovesOf(dadMove, modes.dad);
+  const momMoves = momMovesOf(mom, modes);
+  const hi = hover >= 0 ? hover : -1;
+  const setMode = (key, v) => setModes((m) => ({ ...m, [key]: v }));
+
+  /* ---- kid-perspective stats ---- */
+  const stats = (() => {
+    const split = (startW, hs) => {
+      let scMomBefore = 0,fullMom = 0,fullDad = 0,handoffDays = 0,flights = 0,drives = 0;
+      for (let i = 0; i < N; i++) {
+        const who = custodyOf(i, startW, hs);
+        const ks = kidState(i, dadMoves, momMoves, startW, hs);
+        if (ks.kind === "handoff") {
+          handoffDays++;
+          const sc = kidCity(i - 1, dadMoves, momMoves, startW, hs),ec = kidCity(i, dadMoves, momMoves, startW, hs);
+          if (sc !== ec) {
+            if (meetsInSC(sc, ec, ks)) {flights += 2;} // Dad→SC flight + Mom SC→SD flight
+            else {
+              const tr = handoffTransport(i, ks, dadMoves, momMoves);
+              if (tr.mode === "drive") drives++;else flights++;
+            }
+          }
+        } else {
+          if (who === "Mom") fullMom++;else fullDad++;
+          if (ks.kind === "settled" && who === "Mom" && ks.state.loc === "SC" && i < momMove) scMomBefore++;
+          if (ks.kind === "ride") {
+            const leg = (who === "Dad" ? dadMoves : momMoves).find((l) => l.day === i);
+            if (leg && leg.mode === "drive") drives++;else flights++;
+          }
+        }
+      }
+      return { scMomBefore, fullMom, fullDad, handoffDays, flights, drives };
+    };
+    const cur = split(startWith, handoffs);
+    const agree = split(AGREEMENT.start, AGREEMENT.handoffs); // same travel, agreed handoff dates
+    return { ...cur, deltaMom: cur.fullMom - agree.fullMom, deltaDad: cur.fullDad - agree.fullDad };
+  })();
+
+  /* click a day on the chart: day 0 flips who he starts with; any other day
+     toggles whether that day is a parent handoff */
+  function toggleDay(i) {
+    if (i === 0) {setStartWith((s) => otherParent(s));return;}
+    setHandoffs((hs) => hs.includes(i) ? hs.filter((d) => d !== i) : [...hs, i].sort((a, b) => a - b));
+  }
+
+  function describe(i) {
+    const ks = kidState(i, dadMoves, momMoves, startWith, handoffs);
+    const T = <strong style={{ color: "var(--kid)" }}>in transit</strong>;
+    if (ks.kind === "handoff") {
+      const startCity = kidCity(i - 1, dadMoves, momMoves, startWith, handoffs);
+      const endCity = kidCity(i, dadMoves, momMoves, startWith, handoffs);
+      if (startCity === endCity)
+      return <span><strong style={{ color: "var(--kid)" }}>handoff</strong> &nbsp;·&nbsp; {ks.fromWho} → {ks.toWho} &nbsp;·&nbsp; in {CITY[endCity]}</span>;
+      if (meetsInSC(startCity, endCity, ks))
+      return <span>{T} &nbsp;·&nbsp; {ks.fromWho} ({CITY[startCity]}) → {ks.toWho} ({CITY[endCity]}) <span style={{ color: "var(--muted)" }}>· handoff in Santa Cruz</span></span>;
+      return <span>{T} &nbsp;·&nbsp; {ks.fromWho} ({CITY[startCity]}) → {ks.toWho} ({CITY[endCity]})</span>;
+    }
+    if (ks.kind === "ride")
+    return <span>with {ks.who} &nbsp;·&nbsp; {T} ({CITY[ks.state.from]} → {CITY[ks.state.to]})</span>;
+    const tag = i === WEDDING ? " (wedding)" : i === BIRTHDAY ? " (birthday)" : "";
+    return <span>with {ks.who} &nbsp;·&nbsp; in {CITY[ks.state.loc]}{tag && <span style={{ color: "var(--muted)" }}>{tag}</span>}</span>;
+  }
+
+  /* plain-text custody runs, for the screen-reader summary */
+  const runs = [];
+  for (let i = 0, s = 0; i <= N; i++) {
+    if (i === N || custodyOf(i, startWith, handoffs) !== custodyOf(s, startWith, handoffs)) {
+      runs.push(`${custodyOf(s, startWith, handoffs)} ${shortDate(DATES[s])}–${shortDate(DATES[i - 1])}`);
+      s = i;
+    }
+  }
+
+  return (
+    <div>
+      <header className="hdr">
+        <h1>Planning the Kiddo’s Move</h1>
+      </header>
+
+      <ScenarioBar
+        scenarios={scenarios} highlightId={highlightId} activeId={activeId} dirty={dirty}
+        onLoad={loadScenario} onSaveNew={saveNew} onUpdate={updateScenario}
+        onRename={renameScenario} onDelete={deleteScenario} />
+
+      <div className="statswrap">
+        <div className="stats-h">From the kiddo’s view</div>
+        <div className="stats" style={{ padding: "0px 0px 20px" }}>
+          <div className="stat hero">
+            <div className="num">{stats.scMomBefore}</div>
+            <div className="lab">full days in Santa&nbsp;Cruz with Mom before her move to Portland</div>
+          </div>
+          <div className="stat">
+            <div className="nrow"><HandoffArrowGlyph /><span className="num">{stats.handoffDays}</span></div>
+            <div className="lab">handoff days</div>
+          </div>
+          <div className="stat">
+            <div className="nrow"><DayDot parent="Mom" /><span className="num">{stats.fullMom}</span></div>
+            <div className="lab">full days with Mom</div>
+            <Delta d={stats.deltaMom} />
+          </div>
+          <div className="stat">
+            <div className="nrow"><DayDot parent="Dad" /><span className="num">{stats.fullDad}</span></div>
+            <div className="lab">full days with Dad</div>
+            <Delta d={stats.deltaDad} />
+          </div>
+          <div className="stat">
+            <div className="nrow"><PlaneIcon /><span className="num">{stats.flights}</span></div>
+            <div className="lab">flights for the kid</div>
+          </div>
+          <div className="stat">
+            <div className="nrow"><CarIcon /><span className="num">{stats.drives}</span></div>
+            <div className="lab">long-distance drives for the kid</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <div className="readbar">
+          <div className="readout">
+          {hi >= 0 ?
+            <span><strong>{longDate(DATES[hi])}</strong> &nbsp;·&nbsp; {describe(hi)}</span> :
+            <span style={{ color: "var(--muted)" }}>Hover to read a day · click a day to add or remove a handoff.</span>}
+          </div>
+        </div>
+        <Diagram dadMove={dadMove} mom={mom} modes={modes} startWith={startWith} handoffs={handoffs} hover={hover} setHover={setHover} onToggleDay={toggleDay} />
+      </div>
+
+      <NotesList notes={notes} setNotes={setNotes} />
+
+      <div className="controls">
+        <Slider kind="dad" label="Dad moves to Portland" value={dadMove} min={0} max={N - 1} onChange={setDadMove} mode={modes.dad} onMode={(v) => setMode("dad", v)} />
+        <Slider kind="mom" label="Mom moves to Portland" value={momMove} min={0} max={N - 1} onChange={setMomMove} mode={modes.momMove} onMode={(v) => setMode("momMove", v)} />
+        <Slider kind="mom" label="Mom to San Diego" value={momSD} min={1} max={momSC - 1} onChange={setMomSD} mode={modes.momSD} onMode={(v) => setMode("momSD", v)} />
+        <Slider kind="mom" label="Mom to Santa Cruz" value={momSC} min={momSD + 1} max={N - 1} onChange={setMomSC} mode={modes.momSC} onMode={(v) => setMode("momSC", v)} />
+        {momMove < momSD &&
+        <Slider kind="mom" label="Mom back to Portland" value={momBack} min={momSC + 1} max={N - 1} onChange={setMomBack} mode={modes.momBack} onMode={(v) => setMode("momBack", v)} />
+        }
+      </div>
+
+      <div className="legend">
+        <span className="item"><span className="rib" style={{ background: "var(--dad-rib)" }} /><span className="t">Dad</span>’s location</span>
+        <span className="item"><span className="rib" style={{ background: "var(--mom-rib)" }} /><span className="t">Mom</span>’s location</span>
+        <span className="item"><span className="ln" /><span className="t">The child</span> (rides with whoever has him)</span>
+        <span className="item"><span className="rib" style={{ background: "var(--lane)", border: "2.5px solid var(--kid)", width: 15, height: 15, borderRadius: "50%" }} /><span className="t">Handoff</span> — click any day to toggle</span>
+      </div>
+
+      <p className="sr-only">
+        Custody: {runs.join("; ")}. Dad moves to Portland on {longDate(DATES[dadMove])}. Mom moves to Portland
+        on {longDate(DATES[momMove])}, flies to San Diego on {longDate(DATES[momSD])}, and up to Santa Cruz on
+        {longDate(DATES[momSC])}{momMove < momSD ? `, then back to Portland on ${longDate(DATES[momBack])}` : ""}.
+        The wedding in San Diego is June 25; his birthday in Santa Cruz is June 27.
+      </p>
+    </div>);
+
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
