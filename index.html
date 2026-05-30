@@ -232,18 +232,22 @@ function waypointsToLegs(waypoints, start) {
   return legs;
 }
 
-function momMovesOf(m, modes) {
+function momMovesOf(m, modes, backOn) {
   const md = modes || {};
   const wp = [
   { day: m.move, city: "PDX", mode: md.momMove }, // relocates to Portland (can be any time)
   { day: m.sd, city: "SD", mode: md.momSD }, // flies down to San Diego (wedding)
   { day: m.sc, city: "SC", mode: md.momSC } // up to Santa Cruz (birthday)
   ];
-  /* she only "returns home to Portland" after the birthday if she'd already
-     moved there before the trip; otherwise the move itself brings her up. */
-  if (m.move < m.sd) wp.push({ day: m.back, city: "PDX", mode: md.momBack });
+  /* the "return home to Portland" leg is only meaningful if she'd already moved
+     there before the trip (otherwise the move itself brings her up). When it is
+     applicable it can be toggled off (backOn=false) — meaning she stays in Santa
+     Cruz after the birthday rather than flying back. */
+  if (m.move < m.sd && backOn !== false) wp.push({ day: m.back, city: "PDX", mode: md.momBack });
   return waypointsToLegs(wp, "SC");
 }
+/* is the optional "Mom returns to Portland" leg applicable for these dates? */
+function backApplicable(m) {return m.move < m.sd;}
 
 /* whereabouts on day i: a move day is a TRANSIT day (traveling, in neither place) */
 function locState(i, moves, startLoc) {
@@ -314,13 +318,19 @@ function meetsInSC(startCity, endCity, ks) {
 /* ----------------------------------------------------------------------------
    Geometry (SVG viewBox units — the chart scales to any width)
 ---------------------------------------------------------------------------- */
-const VW = 1160,VH = 505;
+const VW = 1160,VH = 650;
 const laneX0 = 60,laneX1 = 1146;
 const xL = 116,xR = 1098;
 const dx = (xR - xL) / (N - 1);
 const xOf = (i) => xL + i * dx;
 
-const PDX_Y = 112,SC_Y = 262,SD_Y = 412; /* three evenly-spaced lanes */
+/* a chip rail across the top holds the draggable move-date "playheads"; the lanes
+   sit below it. Rows stack downward when chips would overlap. */
+const AXIS_Y = 28;
+const RAIL_Y0 = 60,RAIL_PITCH = 46,CHIP_H = 42;
+const LINE_TOP = 190; /* where the vertical playhead lines begin, below the rail */
+
+const PDX_Y = 250,SC_Y = 400,SD_Y = 550; /* three evenly-spaced lanes */
 const HALF = 46;
 const PDX_PILL = [PDX_Y - HALF, PDX_Y + HALF];
 const SC_PILL = [SC_Y - HALF, SC_Y + HALF];
@@ -561,12 +571,119 @@ function ribbonSegs(legs, off) {
   return { horiz, vert };
 }
 
+/* small inline plane/car glyph for the move chips (24-unit path scaled to `size`) */
+function MoveModeIcon({ mode, x, y, size, color }) {
+  const k = size / 24,ox = x - size / 2,oy = y - size / 2;
+  const d = mode === "drive" ?
+  "M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-2 0v-1H7v1a1 1 0 0 1-2 0v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h1zm2.2-.5h9.6l-1-3a.5.5 0 0 0-.48-.35H8.68a.5.5 0 0 0-.48.35l-1 3zM6.5 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm11 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" :
+  "M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L11 19v-5.5L21 16z";
+  return <path d={d} transform={`translate(${ox},${oy}) scale(${k})`} fill={color} />;
+}
+
+/* The move-date "playheads": a draggable chip per move in a top rail, each with a
+   vertical line dropping into the chart. Rows auto-stack so chips never overlap.
+   Drag a chip (or arrow-key it) to change the date; tap its plane/car to switch
+   travel mode; the optional return flight has an × to remove it. */
+function MovePlayheads({ controls, mom, dayFromClientX, dragKey, setDragKey }) {
+  const C = controls;
+  const heads = [
+  { key: "dad", label: "Dad → PDX", who: "dad", value: C.dadMove, min: 0, max: N - 1, mode: C.modes.dad, modeKey: "dad" },
+  { key: "mom", label: "Mom → PDX", who: "mom", value: C.momMove, min: 0, max: N - 1, mode: C.modes.momMove, modeKey: "momMove" },
+  { key: "sd", label: "Mom → SD", who: "mom", value: C.momSD, min: 1, max: C.momSC - 1, mode: C.modes.momSD, modeKey: "momSD" },
+  { key: "sc", label: "Mom → SC", who: "mom", value: C.momSC, min: C.momSD + 1, max: N - 1, mode: C.modes.momSC, modeKey: "momSC" }];
+
+  const backApp = backApplicable(mom);
+  if (backApp && C.momBackOn)
+  heads.push({ key: "back", label: "Mom → PDX", who: "mom", value: C.momBack, min: C.momSC + 1, max: N - 1, mode: C.modes.momBack, modeKey: "momBack", removable: true });
+
+  // estimate chip width, then greedily assign rows (sorted by day) so none overlap
+  const widthOf = (h) => Math.max(h.label.length * 9.4, 64) + 54;
+  const clampCx = (cx, w) => Math.max(laneX0 + w / 2, Math.min(laneX1 - w / 2, cx));
+  const placed = heads.map((h) => ({ ...h, w: widthOf(h) })).sort((a, b) => a.value - b.value);
+  const rowRight = [];
+  for (const h of placed) {
+    h.cx = clampCx(xOf(h.value), h.w);
+    const left = h.cx - h.w / 2;
+    let r = 0;
+    while (r < rowRight.length && left < rowRight[r] + 14) r++;
+    h.row = r;
+    rowRight[r] = h.cx + h.w / 2;
+  }
+
+  const colorOf = (who) => who === "dad" ? "var(--dad)" : "var(--mom)";
+  const startDrag = (h, e) => {e.stopPropagation();try {e.currentTarget.setPointerCapture(e.pointerId);} catch (err) {}setDragKey(h.key);};
+  const onDrag = (h, e) => {
+    if (dragKey !== h.key) return;
+    const day = Math.max(h.min, Math.min(h.max, dayFromClientX(e.clientX)));
+    if (day !== h.value) C.setHead(h.key, day);
+  };
+  const endDrag = (h, e) => {try {e.currentTarget.releasePointerCapture(e.pointerId);} catch (err) {}if (dragKey === h.key) setDragKey(null);};
+
+  return (
+    <g className="playheads">
+      {backApp && !C.momBackOn &&
+      <g style={{ cursor: "pointer" }} onClick={() => C.addBack()}>
+          <rect x={laneX1 - 188} y={RAIL_Y0 - CHIP_H / 2} width={188} height={CHIP_H} rx={10} fill="none" stroke="var(--hairline)" strokeWidth="1.5" strokeDasharray="4 4" />
+          <text x={laneX1 - 188 / 2} y={RAIL_Y0 + 5} textAnchor="middle" fontSize="14" fontWeight="700" fill="var(--muted)">+ Mom returns to PDX</text>
+        </g>}
+
+      {placed.map((h) => {
+        const lx = xOf(h.value);
+        const color = colorOf(h.who);
+        const cy = RAIL_Y0 + h.row * RAIL_PITCH;
+        const chipB = cy + CHIP_H / 2;
+        const L = h.cx - h.w / 2;
+        const active = dragKey === h.key;
+        return (
+          <g key={h.key}>
+            <line x1={lx} y1={chipB} x2={lx} y2={SD_PILL[1]} stroke={color} strokeWidth={active ? 2.6 : 1.8} strokeDasharray="2 5" opacity={active ? 0.9 : 0.5} pointerEvents="none" />
+            {Math.abs(h.cx - lx) > 0.5 &&
+            <line x1={h.cx} y1={chipB} x2={lx} y2={chipB + 10} stroke={color} strokeWidth="1.8" opacity="0.5" pointerEvents="none" />}
+            <g className="phchip" style={{ cursor: active ? "grabbing" : "grab", touchAction: "none" }}
+            onPointerDown={(e) => startDrag(h, e)} onPointerMove={(e) => onDrag(h, e)}
+            onPointerUp={(e) => endDrag(h, e)} onPointerCancel={(e) => endDrag(h, e)}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft") {e.preventDefault();C.setHead(h.key, Math.max(h.min, h.value - 1));}
+              if (e.key === "ArrowRight") {e.preventDefault();C.setHead(h.key, Math.min(h.max, h.value + 1));}
+            }}>
+              <rect x={L} y={cy - CHIP_H / 2} width={h.w} height={CHIP_H} rx={10}
+              fill="var(--card)" stroke={active ? color : "var(--hairline)"} strokeWidth={active ? 2.4 : 1.5} />
+              <rect x={L + 6} y={cy - CHIP_H / 2 + 8} width={4} height={CHIP_H - 16} rx={2} fill={color} />
+              <text x={L + 18} y={cy - 4} fontSize="15.5" fontWeight="700" fill="var(--text)">{h.label}</text>
+              <g style={{ cursor: "pointer" }} onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {e.stopPropagation();C.setHeadMode(h.modeKey, h.mode === "drive" ? "fly" : "drive");}}>
+                <rect x={L + 15} y={cy + 3} width={22} height={17} rx={4} fill="transparent" />
+                <MoveModeIcon mode={h.mode} x={L + 26} y={cy + 12} size={16} color={color} />
+              </g>
+              <text x={L + 41} y={cy + 16} fontSize="13.5" fill="var(--muted)">{shortDate(DATES[h.value])}</text>
+              {h.removable &&
+              <g style={{ cursor: "pointer" }} onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {e.stopPropagation();C.setMomBackOn(false);}}>
+                  <circle cx={h.cx + h.w / 2 - 13} cy={cy - CHIP_H / 2 + 13} r={9} fill="var(--lane)" />
+                  <path d={`M${h.cx + h.w / 2 - 17} ${cy - CHIP_H / 2 + 9}l8 8M${h.cx + h.w / 2 - 9} ${cy - CHIP_H / 2 + 9}l-8 8`} stroke="var(--muted)" strokeWidth="1.8" strokeLinecap="round" />
+                </g>}
+            </g>
+          </g>);
+
+      })}
+    </g>);
+
+}
+
 /* ----------------------------------------------------------------------------
    Diagram
 ---------------------------------------------------------------------------- */
-function Diagram({ dadMove, mom, modes, startWith, handoffs, hover, setHover, onToggleDay }) {
+function Diagram({ dadMove, mom, modes, momBackOn, startWith, handoffs, hover, setHover, onToggleDay, controls }) {
+  const svgRef = useRef(null);
+  const [dragKey, setDragKey] = useState(null);
+  const dayFromClientX = (cx) => {
+    const el = svgRef.current;if (!el) return 0;
+    const r = el.getBoundingClientRect();
+    return Math.round(((cx - r.left) / r.width * VW - xL) / dx);
+  };
   const dadMoves = dadMovesOf(dadMove, modes.dad);
-  const momMoves = momMovesOf(mom, modes);
+  const momMoves = momMovesOf(mom, modes, momBackOn);
 
   const dadY = Array.from({ length: N }, (_, i) => stateY(locState(i, dadMoves, "SC"), DAD_OFF));
   const momY = Array.from({ length: N }, (_, i) => stateY(locState(i, momMoves, "SC"), MOM_OFF));
@@ -661,6 +778,7 @@ function Diagram({ dadMove, mom, modes, startWith, handoffs, hover, setHover, on
   const axisTicks = [0, 7, 13, 20, 26, 33, 39, 46, 52];
 
   function onMove(e) {
+    if (dragKey !== null) return;
     const r = e.currentTarget.getBoundingClientRect();
     const vx = (e.clientX - r.left) / r.width * VW;
     let i = Math.round((vx - xL) / dx);
@@ -669,7 +787,7 @@ function Diagram({ dadMove, mom, modes, startWith, handoffs, hover, setHover, on
   }
 
   return (
-    <svg className="diagram" viewBox={`0 0 ${VW} ${VH}`} role="img"
+    <svg ref={svgRef} className="diagram" viewBox={`0 0 ${VW} ${VH}`} role="img"
     aria-label="String diagram of where the child is each day"
     onMouseMove={onMove} onMouseLeave={() => setHover(-1)}>
 
@@ -685,7 +803,7 @@ function Diagram({ dadMove, mom, modes, startWith, handoffs, hover, setHover, on
 
       {/* top date axis */}
       {axisTicks.map((i) =>
-      <text key={i} x={xOf(i)} y={42} textAnchor="middle" fontSize="14.5" fill="var(--muted)">{shortDate(DATES[i])}</text>
+      <text key={i} x={xOf(i)} y={AXIS_Y} textAnchor="middle" fontSize="14.5" fill="var(--muted)">{shortDate(DATES[i])}</text>
       )}
 
       {/* parent ribbons — translucent vertical transit risers, opaque horizontal runs on top */}
@@ -726,7 +844,7 @@ function Diagram({ dadMove, mom, modes, startWith, handoffs, hover, setHover, on
       {/* hover indicator */}
       {hover >= 0 &&
       <g>
-          <line x1={xOf(hover)} y1={56} x2={xOf(hover)} y2={SD_PILL[1] + 6} stroke="var(--text)" strokeWidth="1.5" strokeDasharray="2 4" opacity="0.5" />
+          <line x1={xOf(hover)} y1={LINE_TOP} x2={xOf(hover)} y2={SD_PILL[1] + 6} stroke="var(--text)" strokeWidth="1.5" strokeDasharray="2 4" opacity="0.5" />
           <circle cx={xOf(hover)} cy={kidY[hover]} r="6.5" fill={custodyColor(hover)} stroke="var(--lane)" strokeWidth="2" />
         </g>
       }
@@ -739,6 +857,9 @@ function Diagram({ dadMove, mom, modes, startWith, handoffs, hover, setHover, on
           <title>{i === 0 ? "Click to flip who he starts with" : handoffDays.includes(i) ? "Click to remove this handoff" : "Click to make this a handoff"}</title>
         </circle>
       )}
+
+      {/* move-date playheads (draggable chips in the top rail) */}
+      <MovePlayheads controls={controls} mom={mom} dayFromClientX={dayFromClientX} dragKey={dragKey} setDragKey={setDragKey} />
     </svg>);
 
 }
@@ -953,6 +1074,7 @@ function App() {
   const [momSD, setMomSD] = useState(() => load("mt4_momsd", SEED.params.momsd));
   const [momSC, setMomSC] = useState(() => load("mt4_momsc", SEED.params.momsc));
   const [momBack, setMomBack] = useState(() => load("mt4_momback", SEED.params.momback));
+  const [momBackOn, setMomBackOn] = useState(() => loadAny("mt4_mombackon", SEED.params.momBackOn !== false));
   const [startWith, setStartWith] = useState(() => loadAny("mt4_start", SEED.params.start));
   const [handoffs, setHandoffs] = useState(() => loadAny("mt4_handoffs", SEED.params.handoffs));
   const [modes, setModes] = useState(() => loadAny("mt4_modes", SEED.params.modes));
@@ -966,6 +1088,7 @@ function App() {
   useEffect(() => {localStorage.setItem("mt4_momsd", JSON.stringify(momSD));}, [momSD]);
   useEffect(() => {localStorage.setItem("mt4_momsc", JSON.stringify(momSC));}, [momSC]);
   useEffect(() => {localStorage.setItem("mt4_momback", JSON.stringify(momBack));}, [momBack]);
+  useEffect(() => {localStorage.setItem("mt4_mombackon", JSON.stringify(momBackOn));}, [momBackOn]);
   useEffect(() => {localStorage.setItem("mt4_start", JSON.stringify(startWith));}, [startWith]);
   useEffect(() => {localStorage.setItem("mt4_handoffs", JSON.stringify(handoffs));}, [handoffs]);
   useEffect(() => {localStorage.setItem("mt4_modes", JSON.stringify(modes));}, [modes]);
@@ -976,11 +1099,11 @@ function App() {
   /* ---- scenario snapshot helpers ---- */
   const DEFMODES = { dad: "drive", momMove: "drive", momSD: "fly", momSC: "fly", momBack: "fly" };
   const normModes = (m) => ({ ...DEFMODES, ...(m || {}) });
-  const curParams = { dad: dadMove, mom: momMove, momsd: momSD, momsc: momSC, momback: momBack, start: startWith, handoffs: handoffs, modes: modes, notes: notes };
+  const curParams = { dad: dadMove, mom: momMove, momsd: momSD, momsc: momSC, momback: momBack, momBackOn: momBackOn, start: startWith, handoffs: handoffs, modes: modes, notes: notes };
   function paramsEqual(a, b) {
     const ma = normModes(a.modes),mb = normModes(b.modes);
     return a.dad === b.dad && a.mom === b.mom && a.momsd === b.momsd && a.momsc === b.momsc &&
-    a.momback === b.momback && a.start === b.start &&
+    a.momback === b.momback && (a.momBackOn !== false) === (b.momBackOn !== false) && a.start === b.start &&
     a.handoffs.length === b.handoffs.length && a.handoffs.every((d, i) => d === b.handoffs[i]) &&
     ma.dad === mb.dad && ma.momMove === mb.momMove && ma.momSD === mb.momSD && ma.momSC === mb.momSC && ma.momBack === mb.momBack &&
     notesEqual(a.notes, b.notes);
@@ -988,7 +1111,7 @@ function App() {
   function applyParams(p) {
     setDadMove(p.dad);setMomMove(p.mom);setMomSD(p.momsd);setMomSC(p.momsc);
     setNotes(normNotes(p.notes));
-    setMomBack(p.momback);setStartWith(p.start);setHandoffs(p.handoffs.slice());
+    setMomBack(p.momback);setMomBackOn(p.momBackOn !== false);setStartWith(p.start);setHandoffs(p.handoffs.slice());
     setModes(normModes(p.modes));
   }
   const exactMatch = scenarios.find((s) => paramsEqual(s.params, curParams));
@@ -1004,9 +1127,18 @@ function App() {
 
   const mom = { move: momMove, sd: momSD, sc: momSC, back: momBack };
   const dadMoves = dadMovesOf(dadMove, modes.dad);
-  const momMoves = momMovesOf(mom, modes);
+  const momMoves = momMovesOf(mom, modes, momBackOn);
   const hi = hover >= 0 ? hover : -1;
   const setMode = (key, v) => setModes((m) => ({ ...m, [key]: v }));
+
+  /* the move-date playheads read these dates/modes and write back through setHead */
+  const playheadControls = {
+    dadMove, momMove, momSD, momSC, momBack, momBackOn, modes,
+    setHead: (k, v) => ({ dad: setDadMove, mom: setMomMove, sd: setMomSD, sc: setMomSC, back: setMomBack })[k](v),
+    setHeadMode: (mk, v) => setMode(mk, v),
+    setMomBackOn,
+    addBack: () => {setMomBackOn(true);setMomBack(Math.min(N - 1, Math.max(momSC + 1, momBack)));}
+  };
 
   /* ---- kid-perspective stats ---- */
   const stats = (() => {
@@ -1126,20 +1258,10 @@ function App() {
             <span style={{ color: "var(--muted)" }}>Hover to read a day · click a day to add or remove a handoff.</span>}
           </div>
         </div>
-        <Diagram dadMove={dadMove} mom={mom} modes={modes} startWith={startWith} handoffs={handoffs} hover={hover} setHover={setHover} onToggleDay={toggleDay} />
+        <Diagram dadMove={dadMove} mom={mom} modes={modes} momBackOn={momBackOn} startWith={startWith} handoffs={handoffs} hover={hover} setHover={setHover} onToggleDay={toggleDay} controls={playheadControls} />
       </div>
 
       <NotesList notes={notes} setNotes={setNotes} />
-
-      <div className="controls">
-        <Slider kind="dad" label="Dad moves to Portland" value={dadMove} min={0} max={N - 1} onChange={setDadMove} mode={modes.dad} onMode={(v) => setMode("dad", v)} />
-        <Slider kind="mom" label="Mom moves to Portland" value={momMove} min={0} max={N - 1} onChange={setMomMove} mode={modes.momMove} onMode={(v) => setMode("momMove", v)} />
-        <Slider kind="mom" label="Mom to San Diego" value={momSD} min={1} max={momSC - 1} onChange={setMomSD} mode={modes.momSD} onMode={(v) => setMode("momSD", v)} />
-        <Slider kind="mom" label="Mom to Santa Cruz" value={momSC} min={momSD + 1} max={N - 1} onChange={setMomSC} mode={modes.momSC} onMode={(v) => setMode("momSC", v)} />
-        {momMove < momSD &&
-        <Slider kind="mom" label="Mom back to Portland" value={momBack} min={momSC + 1} max={N - 1} onChange={setMomBack} mode={modes.momBack} onMode={(v) => setMode("momBack", v)} />
-        }
-      </div>
 
       <div className="legend">
         <span className="item"><span className="rib" style={{ background: "var(--dad-rib)" }} /><span className="t">Dad</span>’s location</span>
